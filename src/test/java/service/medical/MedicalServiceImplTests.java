@@ -111,7 +111,7 @@ public class MedicalServiceImplTests {
 
     @ParameterizedTest
     @MethodSource("sourceNoMessages")
-    void testCheck(PatientInfo info, BigDecimal currentTemperature, BloodPressure currentPressure) {
+    void testCheckNormalTempAndPressure(PatientInfo info, BigDecimal currentTemperature, BloodPressure currentPressure) {
         PatientInfoRepository patientInfoRepository = Mockito.mock(PatientInfoRepository.class);
         Mockito.when(patientInfoRepository.getById(Mockito.anyString()))
                 .thenReturn(info);
