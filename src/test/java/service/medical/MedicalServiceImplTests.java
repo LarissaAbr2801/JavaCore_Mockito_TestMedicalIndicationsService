@@ -37,7 +37,7 @@ public class MedicalServiceImplTests {
 
     @ParameterizedTest
     @MethodSource("sourceCheckBloodPressure")
-    void testCheckBloodPressure(PatientInfo info, BloodPressure currentPressure, String message) {
+    void testCheckBloodPressure(PatientInfo info, BloodPressure currentPressure, String expected) {
         PatientInfoRepository patientInfoRepository = Mockito.mock(PatientInfoRepository.class);
         Mockito.when(patientInfoRepository.getById(Mockito.anyString()))
                 .thenReturn(info);
@@ -45,14 +45,12 @@ public class MedicalServiceImplTests {
         SendAlertService alertService = Mockito.mock(SendAlertService.class);
         ArgumentCaptor<String> argumentCaptorAlert = ArgumentCaptor.forClass(String.class);
 
-        alertService.send(message);
-
-        Mockito.verify(alertService).send(argumentCaptorAlert.capture());
-
         sut = new MedicalServiceImpl(patientInfoRepository, alertService);
         sut.checkBloodPressure(Mockito.anyString(), currentPressure);
 
-        Assertions.assertEquals(message, argumentCaptorAlert.getValue());
+        Mockito.verify(alertService).send(argumentCaptorAlert.capture());
+
+        Assertions.assertEquals(expected, argumentCaptorAlert.getValue());
     }
 
     private static Stream<Arguments> sourceCheckBloodPressure() {
@@ -61,7 +59,7 @@ public class MedicalServiceImplTests {
                                 LocalDate.of(1982, 1, 16),
                                 new HealthInfo(new BigDecimal("36.6"),
                                         new BloodPressure(125, 78))),
-                new BloodPressure(120,80),
+                new BloodPressure(120,78),
                 String.format("Warning, patient with id: %s, need help", patientInfo.getId())),
 
                 Arguments.of(patientInfo = new PatientInfo("123", "Иван", "Петров",
@@ -74,7 +72,7 @@ public class MedicalServiceImplTests {
 
     @ParameterizedTest
     @MethodSource("sourceCheckTemperature")
-    void testCheckTemperature(PatientInfo info, BigDecimal currentTemperature, String message) {
+    void testCheckTemperature(PatientInfo info, BigDecimal currentTemperature, String expected) {
         PatientInfoRepository patientInfoRepository = Mockito.mock(PatientInfoRepository.class);
         Mockito.when(patientInfoRepository.getById(Mockito.anyString()))
                 .thenReturn(info);
@@ -82,14 +80,12 @@ public class MedicalServiceImplTests {
         SendAlertService alertService = Mockito.mock(SendAlertService.class);
         ArgumentCaptor<String> argumentCaptorAlert = ArgumentCaptor.forClass(String.class);
 
-        alertService.send(message);
-
-        Mockito.verify(alertService).send(argumentCaptorAlert.capture());
-
         sut = new MedicalServiceImpl(patientInfoRepository, alertService);
         sut.checkTemperature(Mockito.anyString(), currentTemperature);
 
-        Assertions.assertEquals(message, argumentCaptorAlert.getValue());
+        Mockito.verify(alertService).send(argumentCaptorAlert.capture());
+
+        Assertions.assertEquals(expected, argumentCaptorAlert.getValue());
     }
 
     private static Stream<Arguments> sourceCheckTemperature() {
@@ -98,14 +94,14 @@ public class MedicalServiceImplTests {
                                 LocalDate.of(1982, 1, 16),
                                 new HealthInfo(new BigDecimal("36.6"),
                                         new BloodPressure(125, 78))),
-                        new BigDecimal("36.9"),
+                        new BigDecimal("30.9"),
                         String.format("Warning, patient with id: %s, need help", patientInfo.getId())),
 
                 Arguments.of(patientInfo = new PatientInfo("123", "Иван", "Петров",
                                 LocalDate.of(1980, 11, 26),
                                 new HealthInfo(new BigDecimal("36.65"),
                                         new BloodPressure(120, 80))),
-                        new BigDecimal("36.6"),
+                        new BigDecimal("35.1"),
                         String.format("Warning, patient with id: %s, need help", patientInfo.getId())));
     }
 
