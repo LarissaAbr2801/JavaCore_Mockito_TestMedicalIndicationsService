@@ -1,6 +1,6 @@
 package ru.netology.patient.service.alert;
 
-public interface SendAlertService {
+public interface  SendAlertService {
 
     void send(String message);
 }
